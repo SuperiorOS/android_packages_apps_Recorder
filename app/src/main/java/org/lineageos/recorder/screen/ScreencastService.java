@@ -84,6 +84,8 @@ public class ScreencastService extends Service implements MediaProviderHelper.On
             "org.lineageos.recorder.screen.ACTION_START_SCREENCAST";
     public static final String ACTION_STOP_SCREENCAST =
             "org.lineageos.recorder.screen.ACTION_STOP_SCREENCAST";
+    public static final String ACTION_TOGGLE_SCREENCAST =
+            "org.lineageos.recorder.screen.ACTION_TOGGLE_SCREENCAST";
     private static final String ACTION_SCAN =
             "org.lineageos.recorder.server.display.SCAN";
     private static final String ACTION_STOP_SCAN =
@@ -117,6 +119,7 @@ public class ScreencastService extends Service implements MediaProviderHelper.On
     private boolean mAudioRecording;
     private boolean mAudioEncoding;
     private boolean mVideoEncoding;
+    private boolean mVideoRecording;
     private File mPath;
     private int videoTrackIndex = -1;
     private int audioTrackIndex = -1;
@@ -169,6 +172,12 @@ public class ScreencastService extends Service implements MediaProviderHelper.On
             case ACTION_STOP_SCREENCAST:
                 stopCasting();
                 return START_STICKY;
+            case ACTION_TOGGLE_SCREENCAST:
+                if (mVideoRecording) {
+                    stopCasting();
+                    return START_STICKY;
+                }
+                return startScreencasting(intent);
             default:
                 return START_NOT_STICKY;
         }
@@ -208,6 +217,8 @@ public class ScreencastService extends Service implements MediaProviderHelper.On
                 SCREENCAST_NOTIFICATION_CHANNEL) != null) {
             return;
         }
+
+        mVideoRecording = false;
 
         CharSequence name = getString(R.string.screen_channel_title);
         String description = getString(R.string.screen_channel_desc);
@@ -255,7 +266,7 @@ public class ScreencastService extends Service implements MediaProviderHelper.On
         startForeground(NOTIFICATION_ID, mBuilder.build());
 
         int resultCode = intent.getIntExtra(EXTRA_RESULT_CODE, Activity.RESULT_CANCELED);
-        mAudioSource = intent.getIntExtra(EXTRA_AUDIO_SOURCE, Utils.PREF_AUDIO_RECORDING_SOURCE_DEFAULT);
+        mAudioSource = Utils.getAudioRecordingSource(this);
         Intent data = intent.getParcelableExtra(EXTRA_DATA);
         if (data != null) {
             mMediaProjection = mMediaProjectionManager.getMediaProjection(resultCode, data);
@@ -361,6 +372,7 @@ public class ScreencastService extends Service implements MediaProviderHelper.On
             // Let's get ready to record now
             switch (mAudioSource) {
                 case 1:
+                    mVideoRecording = true;
                     // Start the encoders
                     mVideoEncoder.start();
                     new Thread(new VideoEncoderTask(), "VideoEncoderTask").start();
@@ -372,6 +384,7 @@ public class ScreencastService extends Service implements MediaProviderHelper.On
                     break;
 
                 default:
+                    mVideoRecording = true;
                     mMediaRecorder.start();
                     break;
             }
@@ -413,6 +426,7 @@ public class ScreencastService extends Service implements MediaProviderHelper.On
                 mVirtualDisplay.release();
                 break;
         }
+        mVideoRecording = false;
         if (mTimer != null) {
             mTimer.cancel();
             mTimer = null;

@@ -16,19 +16,27 @@
 package org.lineageos.recorder.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.util.DisplayMetrics;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import org.lineageos.recorder.screen.OverlayService;
+import org.lineageos.recorder.utils.GlobalSettings;
 import java.io.Closeable;
 import java.io.IOException;
 
 public class Utils {
     public static final String PREFS = "preferences";
-    public static final String KEY_RECORDING = "recording";
+    public static final String SCREEN_PREFS = "screen_preferences";
+    //public static final String KEY_RECORDING = "recording";
+    public static final String ACTION_RECORDING_STATE_CHANGED = "org.lineageos.recorder.RECORDING_STATE_CHANGED";
+    public static final String ACTION_HIDE_ACTIVITY = "org.lineageos.recorder.HIDE_ACTIVITY";
     public static final String PREF_RECORDING_NOTHING = "nothing";
     public static final String PREF_RECORDING_SCREEN = "screen";
-    private static final String PREF_RECORDING_SOUND = "sound";
+    public static final String PREF_RECORDING_SOUND = "sound";
     public static final String PREF_AUDIO_RECORDING_SOURCE = "audio_recording_source";
     public static final int PREF_AUDIO_RECORDING_SOURCE_DISABLED = 0;
     public static final int PREF_AUDIO_RECORDING_SOURCE_INTERNAL = 1;
@@ -38,9 +46,8 @@ public class Utils {
     private Utils() {
     }
 
-    private static String getStatus(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(PREFS, 0);
-        return prefs.getString(KEY_RECORDING, PREF_RECORDING_NOTHING);
+    private static String getStatus() {
+        return GlobalSettings.sRecordingStatus;
     }
 
     public static void setStatus(Context context, UiStatus status) {
@@ -54,20 +61,25 @@ public class Utils {
     }
 
     public static void setStatus(Context context, String status) {
-        SharedPreferences prefs = context.getSharedPreferences(PREFS, 0);
-        prefs.edit().putString(KEY_RECORDING, status).apply();
+        GlobalSettings.sRecordingStatus = status;
+        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(ACTION_RECORDING_STATE_CHANGED));
     }
 
     public static boolean isRecording(Context context) {
-        return !PREF_RECORDING_NOTHING.equals(getStatus(context));
+        return !PREF_RECORDING_NOTHING.equals(getStatus());
     }
 
     public static boolean isSoundRecording(Context context) {
-        return PREF_RECORDING_SOUND.equals(getStatus(context));
+        return PREF_RECORDING_SOUND.equals(getStatus());
     }
 
     public static boolean isScreenRecording(Context context) {
-        return PREF_RECORDING_SCREEN.equals(getStatus(context));
+        return PREF_RECORDING_SCREEN.equals(getStatus());
+    }
+
+    public static int getAudioRecordingSource(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(Utils.PREFS, 0);
+        return prefs.getInt(Utils.PREF_AUDIO_RECORDING_SOURCE, Utils.PREF_AUDIO_RECORDING_SOURCE_DEFAULT);
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -87,6 +99,13 @@ public class Utils {
     private static int getDarkenedColorValue(int value) {
         float dark = 0.8f; // -20% lightness
         return Math.min(Math.round(value * dark), 255);
+    }
+
+    public static void stopOverlayService(Context context) {
+        // Stop overlay service if running
+        if (OverlayService.isRunning) {
+            context.stopService(new Intent(context, OverlayService.class));
+        }
     }
 
     /**
@@ -122,6 +141,9 @@ public class Utils {
         }
     }
 
+    public static void collapseStatusBar(Context context) {
+        context.sendBroadcast(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
+    }
 
     public enum UiStatus {
         NOTHING,
