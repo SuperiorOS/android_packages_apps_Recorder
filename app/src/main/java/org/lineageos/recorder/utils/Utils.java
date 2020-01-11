@@ -29,7 +29,11 @@ public class Utils {
     public static final String PREF_RECORDING_NOTHING = "nothing";
     public static final String PREF_RECORDING_SCREEN = "screen";
     private static final String PREF_RECORDING_SOUND = "sound";
-    public static final String PREF_SCREEN_WITH_AUDIO = "screen_with_audio";
+    public static final String PREF_AUDIO_RECORDING_SOURCE = "audio_recording_source";
+    public static final int PREF_AUDIO_RECORDING_SOURCE_DISABLED = 0;
+    public static final int PREF_AUDIO_RECORDING_SOURCE_INTERNAL = 1;
+    public static final int PREF_AUDIO_RECORDING_SOURCE_MICROPHONE = 2;
+    public static final int PREF_AUDIO_RECORDING_SOURCE_DEFAULT = PREF_AUDIO_RECORDING_SOURCE_DISABLED;
 
     private Utils() {
     }

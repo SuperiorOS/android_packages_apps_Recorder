@@ -290,9 +290,10 @@ public class RecorderActivity extends AppCompatActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        int audioSource = mPrefs.getInt(Utils.PREF_AUDIO_RECORDING_SOURCE, Utils.PREF_AUDIO_RECORDING_SOURCE_DEFAULT);
         if (requestCode == REQUEST_AUDIO_VIDEO && resultCode == Activity.RESULT_OK) {
             Intent intent = new Intent(this, OverlayService.class);
-            intent.putExtra(OverlayService.EXTRA_HAS_AUDIO, isAudioAllowedWithScreen());
+            intent.putExtra(OverlayService.EXTRA_AUDIO_SOURCE, audioSource);
             intent.putExtra(OverlayService.EXTRA_RESULT_CODE, resultCode);
             intent.putExtra(OverlayService.EXTRA_RESULT_DATA, data);
             startService(intent);
@@ -398,10 +399,6 @@ public class RecorderActivity extends AppCompatActivity implements
         }
 
         return false;
-    }
-
-    private boolean isAudioAllowedWithScreen() {
-        return mPrefs.getBoolean(Utils.PREF_SCREEN_WITH_AUDIO, false);
     }
 
     private void setupConnection() {

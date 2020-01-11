@@ -18,10 +18,25 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <Switch
-        android:id="@+id/dialog_content_screen_settings_switch"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/colorSecondaryText"
-        android:text="@string/screen_audio_message_off" />
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/screen_audio_recording_title"
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="16sp" />
+
+        <Spinner
+            android:id="@+id/dialog_content_screen_settings_audio_source"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:entries="@array/screen_audio_recording_entries" />
+    </LinearLayout>
 </LinearLayout>

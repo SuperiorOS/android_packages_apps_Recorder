@@ -36,7 +36,7 @@ public class OverlayService extends Service {
     private static final String SCREENCAST_OVERLAY_NOTIFICATION_CHANNEL =
             "screencast_overlay_notification_channel";
 
-    public static final String EXTRA_HAS_AUDIO = "extra_audio";
+    public static final String EXTRA_AUDIO_SOURCE = "extra_audio_source";
     public static final String EXTRA_RESULT_CODE = "extra_result_code";
     public static final String EXTRA_RESULT_DATA = "extra_result_data";
     private final static int FG_ID = 123;
@@ -54,13 +54,13 @@ public class OverlayService extends Service {
         if (intent == null) {
             return START_NOT_STICKY;
         }
-        boolean hasAudio = intent.getBooleanExtra(EXTRA_HAS_AUDIO, false);
+        int audioSource = intent.getIntExtra(EXTRA_AUDIO_SOURCE, Utils.PREF_AUDIO_RECORDING_SOURCE_DEFAULT);
         int resultCode = intent.getIntExtra(EXTRA_RESULT_CODE, Activity.RESULT_CANCELED);
         Intent data = intent.getParcelableExtra(EXTRA_RESULT_DATA);
 
         mLayer = new OverlayLayer(this);
         mLayer.setOnActionClickListener(() -> {
-            startService(ScreencastService.getStartIntent(this, resultCode, data, hasAudio));
+            startService(ScreencastService.getStartIntent(this, resultCode, data, audioSource));
             Utils.setStatus(getApplication(), Utils.UiStatus.SCREEN);
             onDestroy();
         });
