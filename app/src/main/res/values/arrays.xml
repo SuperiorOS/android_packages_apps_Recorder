@@ -6,4 +6,10 @@
         <item>@string/screen_audio_recording_internal</item>
         <item>@string/screen_audio_recording_microphone</item>
     </string-array>
+    <!-- Video quality entries -->
+    <string-array name="screen_video_quality_entries" translatable="false">
+        <item>@string/screen_video_recording_quality_low</item>
+        <item>@string/screen_video_recording_quality_normal</item>
+        <item>@string/screen_video_recording_quality_high</item>
+    </string-array>
 </resources>

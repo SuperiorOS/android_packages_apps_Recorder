@@ -25,10 +25,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
@@ -52,6 +54,8 @@ public class DialogActivity extends AppCompatActivity {
     private LinearLayout mRootView;
     private FrameLayout mContent;
     private Spinner mAudioSource;
+    private Spinner mVideoQuality;
+    private Switch mVideoShowTaps;
 
     private SharedPreferences mPrefs;
 
@@ -161,7 +165,13 @@ public class DialogActivity extends AppCompatActivity {
     private void setupAsSettingsScreen() {
         View view = createContentView(R.layout.dialog_content_screen_settings);
         mAudioSource = view.findViewById(R.id.dialog_content_screen_settings_audio_source);
+        mVideoQuality = view.findViewById(R.id.dialog_content_screen_settings_video_quality);
+        mVideoShowTaps = view.findViewById(R.id.dialog_content_screen_settings_video_showdots);
+
         mAudioSource.setSelection(getScreenWithAudio());
+        mVideoQuality.setSelection(getScreenQuality());
+        mVideoShowTaps.setChecked(getScreenWithTaps());
+
         mAudioSource.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -176,10 +186,26 @@ public class DialogActivity extends AppCompatActivity {
             }
         });
 
-        mAudioSource.setSelection(getScreenWithAudio());
+        mVideoQuality.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                setScreenQuality(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        mVideoShowTaps.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                setScreenWithTaps(isChecked);
+            }
+        });
 
         if (Utils.isScreenRecording(this)) {
             mAudioSource.setEnabled(false);
+            mVideoQuality.setEnabled(false);
         }
     }
 
@@ -204,5 +230,23 @@ public class DialogActivity extends AppCompatActivity {
 
     private int getScreenWithAudio() {
         return mPrefs.getInt(Utils.PREF_AUDIO_RECORDING_SOURCE, Utils.PREF_AUDIO_RECORDING_SOURCE_DEFAULT);
+    }
+
+    private void setScreenQuality(int quality) {
+        mPrefs.edit().putInt(Utils.PREF_SCREEN_RECORDING_QUALITY, quality).apply();
+    }
+
+    private int getScreenQuality() {
+        return mPrefs.getInt(Utils.PREF_SCREEN_RECORDING_QUALITY, Utils.PREF_VIDEO_RECORDING_BITRATE_DEFAULT);
+    }
+
+    private void setScreenWithTaps(boolean showTaps) {
+        if (Utils.isScreenRecording(this)) Utils.setShowTaps(this, showTaps);
+        mPrefs.edit().putBoolean(Utils.PREF_SCREEN_RECORDING_TAPS, showTaps).apply();
+
+    }
+
+    private boolean getScreenWithTaps() {
+        return mPrefs.getBoolean(Utils.PREF_SCREEN_RECORDING_TAPS, Utils.PREF_SCREEN_RECORDING_TAPS_DEFAULT);
     }
 }

@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -38,16 +39,29 @@ public class Utils {
     public static final String PREF_RECORDING_SCREEN = "screen";
     public static final String PREF_RECORDING_SOUND = "sound";
     public static final String PREF_AUDIO_RECORDING_SOURCE = "audio_recording_source";
+    public static final String PREF_SCREEN_RECORDING_QUALITY = "screen_recording_quality";
+    public static final String PREF_SCREEN_RECORDING_TAPS = "screen_recording_showtaps";
     public static final int PREF_AUDIO_RECORDING_SOURCE_DISABLED = 0;
     public static final int PREF_AUDIO_RECORDING_SOURCE_INTERNAL = 1;
     public static final int PREF_AUDIO_RECORDING_SOURCE_MICROPHONE = 2;
     public static final int PREF_AUDIO_RECORDING_SOURCE_DEFAULT = PREF_AUDIO_RECORDING_SOURCE_DISABLED;
+    public static final int PREF_VIDEO_RECORDING_BITRATE_LOW = 4000000;
+    public static final int PREF_VIDEO_RECORDING_BITRATE_MEDIUM = 5500000;
+    public static final int PREF_VIDEO_RECORDING_BITRATE_HIGH = 7500000;
+    public static final int PREF_VIDEO_RECORDING_BITRATE_DEFAULT = 1;
+    public static final boolean PREF_SCREEN_RECORDING_TAPS_DEFAULT = false;
 
     private Utils() {
     }
 
     private static String getStatus() {
         return GlobalSettings.sRecordingStatus;
+    }
+
+    public static void setShowTaps(Context context, boolean isEnabled) {
+        int value = isEnabled ? 1 : 0;
+        Settings.System.putInt(context.getContentResolver(),
+                "show_touches", value);
     }
 
     public static void setStatus(Context context, UiStatus status) {
@@ -80,6 +94,16 @@ public class Utils {
     public static int getAudioRecordingSource(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(Utils.PREFS, 0);
         return prefs.getInt(Utils.PREF_AUDIO_RECORDING_SOURCE, Utils.PREF_AUDIO_RECORDING_SOURCE_DEFAULT);
+    }
+
+    public static int getVideoRecordingBitrate(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(Utils.PREFS, 0);
+        return prefs.getInt(Utils.PREF_SCREEN_RECORDING_QUALITY, Utils.PREF_VIDEO_RECORDING_BITRATE_DEFAULT);
+    }
+
+    public static boolean getShowTapsConfig(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(Utils.PREFS, 0);
+        return prefs.getBoolean(Utils.PREF_SCREEN_RECORDING_TAPS, Utils.PREF_SCREEN_RECORDING_TAPS_DEFAULT);
     }
 
     @SuppressWarnings("SameParameterValue")

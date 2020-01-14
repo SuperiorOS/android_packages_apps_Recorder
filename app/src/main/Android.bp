@@ -23,6 +23,8 @@ android_app {
 
     product_specific: true,
 
+    privileged: true,
+
     static_libs: [
         "androidx.annotation_annotation",
         "androidx-constraintlayout_constraintlayout",

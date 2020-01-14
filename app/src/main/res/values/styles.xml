@@ -37,6 +37,9 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowIsFloating">true</item>
         <item name="android:windowContentTransitions">true</item>
+        <item name="android:spinnerItemStyle">@style/AppTheme.SpinnerItem</item>
+        <item name="spinnerDropDownItemStyle">@style/AppTheme.SpinnerItem.DropDownItem</item>
+        <item name="android:colorControlNormal">@color/colorPrimaryText</item>
     </style>
 
     <style name="AppTheme.RecordTitle">
@@ -81,4 +84,13 @@
     <style name="AppTheme.Switch" parent="@android:style/TextAppearance.Small">
         <item name="android:textColor">@color/colorSecondaryText</item>
     </style>
+
+    <style name="AppTheme.SpinnerItem" parent="@android:style/Widget.TextView.SpinnerItem">
+        <item name="android:textColor">@color/colorPrimaryText</item>
+    </style>
+
+    <style name="AppTheme.SpinnerItem.DropDownItem" parent="@android:style/Widget.DropDownItem.Spinner">
+        <item name="android:textColor">@color/colorPrimaryText</item>
+    </style>
+
 </resources>

@@ -93,10 +93,11 @@ public class ScreencastService extends Service implements MediaProviderHelper.On
 
     private static final int TOTAL_NUM_TRACKS = 1;
     private static final int SAMPLES_PER_FRAME = 1024;
-    private static final int VIDEO_BIT_RATE = 5000000;
-    private static final int VIDEO_FRAME_RATE = 48;
     private static final int AUDIO_BIT_RATE = 128000;
-    private static final int AUDIO_SAMPLE_RATE = 44100;
+    private static int AUDIO_CHANNEL_TYPE;
+    private static int AUDIO_SAMPLE_RATE = 44100;
+    private static int VIDEO_BIT_RATE;
+    private static int VIDEO_FRAME_RATE;
 
     public static final int NOTIFICATION_ID = 61;
     private long mStartTime;
@@ -286,6 +287,20 @@ public class ScreencastService extends Service implements MediaProviderHelper.On
             int screenWidth = metrics.widthPixels;
             int screenHeight = metrics.heightPixels;
             mMediaRecorder = new MediaRecorder();
+            switch (Utils.getVideoRecordingBitrate(this)) {
+                case 0:
+                    VIDEO_BIT_RATE = Utils.PREF_VIDEO_RECORDING_BITRATE_LOW;
+                    VIDEO_FRAME_RATE = 30;
+                case 2:
+                    VIDEO_BIT_RATE = Utils.PREF_VIDEO_RECORDING_BITRATE_HIGH;
+                    VIDEO_FRAME_RATE = 60;
+
+                case 1:
+                default:
+                    VIDEO_BIT_RATE = Utils.PREF_VIDEO_RECORDING_BITRATE_MEDIUM;
+                    VIDEO_FRAME_RATE = 48;
+            }
+            AUDIO_CHANNEL_TYPE = AudioFormat.CHANNEL_IN_MONO;
 
             // Reving up those recorders
             switch (mAudioSource) {
@@ -370,6 +385,7 @@ public class ScreencastService extends Service implements MediaProviderHelper.On
                     null);
 
             // Let's get ready to record now
+            Utils.setShowTaps(this, Utils.getShowTapsConfig(this));
             switch (mAudioSource) {
                 case 1:
                     mVideoRecording = true;
@@ -426,6 +442,7 @@ public class ScreencastService extends Service implements MediaProviderHelper.On
                 mVirtualDisplay.release();
                 break;
         }
+        Utils.setShowTaps(this, false);
         mVideoRecording = false;
         if (mTimer != null) {
             mTimer.cancel();
