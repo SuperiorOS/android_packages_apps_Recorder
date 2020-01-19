@@ -53,7 +53,7 @@ public final class MediaProviderHelper {
         values.put(MediaStore.Audio.Media.ARTIST, "Recorder");
         values.put(MediaStore.Audio.Media.ALBUM, "Sound records");
         values.put(MediaStore.Audio.Media.DATE_ADDED, System.currentTimeMillis() / 1000L);
-        values.put(MediaStore.Audio.Media.RELATIVE_PATH, "Music/Sound records");
+        values.put(MediaStore.Audio.Media.RELATIVE_PATH, "Music/SoundRecord");
         values.put(MediaStore.Audio.Media.IS_PENDING, 1);
 
         final Uri uri = cr.insert(MediaStore.Audio.Media.getContentUri(
@@ -79,7 +79,7 @@ public final class MediaProviderHelper {
         values.put(MediaStore.Video.Media.TITLE, file.getName());
         values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
         values.put(MediaStore.Video.Media.DATE_ADDED, System.currentTimeMillis() / 1000L);
-        values.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/Screen records");
+        values.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/ScreenRecords");
         values.put(MediaStore.Audio.Media.IS_PENDING, 1);
 
         final Uri uri = cr.insert(MediaStore.Video.Media.getContentUri(
